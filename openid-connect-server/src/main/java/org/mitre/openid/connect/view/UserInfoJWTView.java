@@ -86,26 +86,18 @@ public class UserInfoJWTView extends UserInfoView {
 	private SymmetricKeyJWTValidatorCacheService symmetricCacheService;
 
 	@Override
-	protected void writeOut(JsonObject json, Map<String, Object> model,
-			HttpServletRequest request, HttpServletResponse response) {
+	protected void writeOut(String json, Map<String, Object> model,
+			 HttpServletResponse response) {
 
 		try {
 			ClientDetailsEntity client = (ClientDetailsEntity)model.get(CLIENT);
 
-			// use the parser to import the user claims into the object
-			StringWriter writer = new StringWriter();
-			gson.toJson(json, writer);
-
 			response.setContentType(JOSE_MEDIA_TYPE_VALUE);
-
-			JWTClaimsSet claims = JWTClaimsSet.parse(writer.toString());
-
+	
+			JWTClaimsSet claims = JWTClaimsSet.parse(json);
 			claims.setAudience(Lists.newArrayList(client.getClientId()));
-
 			claims.setIssuer(config.getIssuer());
-
 			claims.setIssueTime(new Date());
-
 			claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 
 

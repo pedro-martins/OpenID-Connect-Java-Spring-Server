@@ -77,6 +77,14 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
 		</dependency>
+		<!-- projeto para adicionar semantica aos dados trafegados -->
+		<dependency>
+			<groupId>br.com.ivansalvadori</groupId>
+			<artifactId>gson-ld</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		
 	</dependencies>
 
 	<packaging>jar</packaging>

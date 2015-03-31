@@ -19,6 +19,7 @@
  */
 package org.mitre.oauth2.web;
 
+import java.lang.reflect.Field;
 import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,9 +45,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
+
+import br.ufsc.lrg.openid.connect.OpenIdConnectJson;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -69,6 +73,7 @@ import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_S
 public class OAuthConfirmationController {
 
 
+	private OpenIdConnectJson openIdConnectJson;
 	@Autowired
 	private ClientDetailsEntityService clientService;
 
@@ -169,16 +174,20 @@ public class OAuthConfirmationController {
 		UserInfo user = userInfoService.getByUsername(p.getName());
 		Map<String, Map<String, String>> claimsForScopes = new HashMap<String, Map<String, String>>();
 		if (user != null) {
-			JsonObject userJson = user.toJson();
+			
+			Field[] fields = user.getClass().getFields();
 
 			for (SystemScope systemScope : sortedScopes) {
 				Map<String, String> claimValues = new HashMap<String, String>();
 
 				Set<String> claims = scopeClaimTranslationService.getClaimsForScope(systemScope.getValue());
 				for (String claim : claims) {
-					if (userJson.has(claim) && userJson.get(claim).isJsonPrimitive()) {
-						// TODO: this skips the address claim
-						claimValues.put(claim, userJson.get(claim).getAsString());
+					Field field = getFieldByClaim(fields, claim);
+					if (field !=null && isFieldPrimitive(field)) {
+						// TODO: this skips the address claim						
+						Object object = objectFromField(user, field);
+						if(object != null)
+						claimValues.put(claim,object.toString() );
 					}
 				}
 
@@ -212,6 +221,30 @@ public class OAuthConfirmationController {
 		model.put("csrf", authRequest.getExtensions().get(CSRF));
 
 		return "approve";
+	}
+
+	private Object objectFromField(UserInfo user, Field field){
+		Object object = null;
+		try {
+			object = field.get(user);
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			throw new RuntimeException("Null user field");
+		}
+		return object;
+	}
+	private boolean isFieldPrimitive(Field field){
+		return field.getClass().isPrimitive() || 
+			   String.class.isAssignableFrom(field.getClass()) ||
+			   Number.class.isAssignableFrom(field.getClass()) ||
+			   Character.class.isAssignableFrom(field.getClass()) ||
+			   Boolean.class.isAssignableFrom(field.getClass());
+	}
+	private Field getFieldByClaim(Field[] fields,String claim){
+		for(int i = 0; i < fields.length; i++){
+			if(fields[i].getName().equals(claim)){
+				return fields[i];
+			}
+		}return null;
 	}
 
 	/**

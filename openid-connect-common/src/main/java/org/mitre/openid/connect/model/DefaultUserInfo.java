@@ -28,6 +28,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import br.com.srs.gsonld.SemanticClass;
+
 import com.google.gson.JsonObject;
 
 @Entity
@@ -35,6 +37,8 @@ import com.google.gson.JsonObject;
 @NamedQueries({
 	@NamedQuery(name=DefaultUserInfo.QUERY_BY_USERNAME, query = "select u from DefaultUserInfo u WHERE u.preferredUsername = :" + DefaultUserInfo.PARAM_USERNAME)
 })
+
+@SemanticClass
 public class DefaultUserInfo implements UserInfo {
 
 	public static final String QUERY_BY_USERNAME = "DefaultUserInfo.getByUsername";

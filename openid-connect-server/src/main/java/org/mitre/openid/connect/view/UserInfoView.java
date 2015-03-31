@@ -18,6 +18,8 @@ package org.mitre.openid.connect.view;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,6 +27,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import br.ufsc.lrg.openid.connect.OpenIdConnectJson;
 
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.ScopeClaimTranslationService;
@@ -55,7 +59,9 @@ public class UserInfoView extends AbstractView {
 	public static final String VIEWNAME = "userInfoView";
 	
 	private static JsonParser jsonParser = new JsonParser();
-
+	
+	@Autowired
+	private OpenIdConnectJson openIdConnectJson;
 	/**
 	 * Logger for this class
 	 */
@@ -109,15 +115,15 @@ public class UserInfoView extends AbstractView {
 		if (model.get(REQUESTED_CLAIMS) != null) {
 			requestedClaims = jsonParser.parse((String) model.get(REQUESTED_CLAIMS)).getAsJsonObject();
 		}
-		JsonObject json = toJsonFromRequestObj(userInfo, scope, authorizedClaims, requestedClaims);
+		String json = toJsonFromRequestObj(userInfo, scope, authorizedClaims, requestedClaims);
 
-		writeOut(json, model, request, response);
+		writeOut(json,null,response);
 	}
 
-	protected void writeOut(JsonObject json, Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
+	protected void writeOut(String json,Map<String, Object> model,HttpServletResponse response) {
 		try {
 			Writer out = response.getWriter();
-			gson.toJson(json, out);
+			out.write(json);
 		} catch (IOException e) {
 
 			logger.error("IOException in UserInfoView.java: ", e);
@@ -138,12 +144,9 @@ public class UserInfoView extends AbstractView {
 	 * @param requestedClaims the claims requested in the RequestObject
 	 * @return the filtered JsonObject result
 	 */
-	private JsonObject toJsonFromRequestObj(UserInfo ui, Set<String> scope, JsonObject authorizedClaims, JsonObject requestedClaims) {
+	private String toJsonFromRequestObj(UserInfo ui, Set<String> scope, JsonObject authorizedClaims, JsonObject requestedClaims) {
 
 		// get the base object
-		JsonObject obj = ui.toJson();
-
-		Set<String> allowedByScope = translator.getClaimsForScopeSet(scope);
 		Set<String> authorizedByClaims = new HashSet<String>();
 		Set<String> requestedByClaims = new HashSet<String>();
 
@@ -159,24 +162,25 @@ public class UserInfoView extends AbstractView {
 				requestedByClaims.add(entry.getKey());
 			}
 		}
-
-		// Filter claims by performing a manual intersection of claims that are allowed by the given scope, requested, and authorized.
-		// We cannot use Sets.intersection() or similar because Entry<> objects will evaluate to being unequal if their values are
-		// different, whereas we are only interested in matching the Entry<>'s key values.
-		JsonObject result = new JsonObject();
-		for (Entry<String, JsonElement> entry : obj.entrySet()) {
-
-			if (allowedByScope.contains(entry.getKey())
-					|| authorizedByClaims.contains(entry.getKey())) {
-				// it's allowed either by scope or by the authorized claims (either way is fine with us)
-
-				if (requestedByClaims.isEmpty() || requestedByClaims.contains(entry.getKey())) {
-					// the requested claims are empty (so we allow all), or they're not empty and this claim was specifically asked for
-					result.add(entry.getKey(), entry.getValue());
-				} // otherwise there were specific claims requested and this wasn't one of them
+		
+		Field[] field = ui.getClass().getFields();
+		
+		for(int i = 0 ; i < field.length; i++){
+			if(!requestedByClaims.contains(field[i].getName())){
+				setObjectAtributeToNull(ui, field[i]);
 			}
 		}
 
-		return result;
+		return openIdConnectJson.toJson(ui);
 	}
+
+	private void setObjectAtributeToNull(UserInfo ui, Field field) {
+		try {
+			if(!Modifier.isFinal(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())){						
+				field.set(ui, null);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	} 
 }
