@@ -28,7 +28,10 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import br.com.srs.gsonld.SameAs;
 import br.com.srs.gsonld.SemanticClass;
+import br.com.srs.gsonld.SemanticProperty;
+import br.com.srs.gsonld.Vocabulary;
 
 import com.google.gson.JsonObject;
 
@@ -38,8 +41,9 @@ import com.google.gson.JsonObject;
 	@NamedQuery(name=DefaultUserInfo.QUERY_BY_USERNAME, query = "select u from DefaultUserInfo u WHERE u.preferredUsername = :" + DefaultUserInfo.PARAM_USERNAME),
 	@NamedQuery(name=DefaultUserInfo.QUERY_BY_EMAIL, query = "select u from DefaultUserInfo u WHERE u.email = :" + DefaultUserInfo.PARAM_EMAIL)
 })
-
-@SemanticClass
+@Vocabulary(prefix="schema", id="http://schema.org/")
+@SemanticClass("http://schema.org/Person")
+@SameAs({"http://xmlns.com/foaf/0.1/Person","http://schema.org/Person"})
 public class DefaultUserInfo implements UserInfo {
 
 	public static final String QUERY_BY_USERNAME = "DefaultUserInfo.getByUsername";
@@ -53,7 +57,9 @@ public class DefaultUserInfo implements UserInfo {
 	private Long id;
 	private String sub;
 	private String preferredUsername;
+@SemanticProperty("http://schema.org/name")
 	private String name;
+@SemanticProperty("http://schema.org/alternateName")
 	private String givenName;
 	private String familyName;
 	private String middleName;
@@ -61,6 +67,7 @@ public class DefaultUserInfo implements UserInfo {
 	private String profile;
 	private String picture;
 	private String website;
+@SemanticProperty("http://schema.org/email")
 	private String email;
 	private Boolean emailVerified;
 	private String gender;

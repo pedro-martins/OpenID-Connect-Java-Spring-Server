@@ -24,11 +24,11 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.mitre.openid.connect.config.ServerConfiguration.UserInfoTokenMethod;
-import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -36,9 +36,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import br.ufsc.lrg.openid.connect.OpenIdConnectJson;
+import br.ufsc.lrg.openid.connect.user.CustomUser;
+
 import com.google.common.base.Strings;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 /**
  * Utility class to fetch userinfo from the userinfo endpoint, if available.
@@ -51,6 +52,20 @@ public class UserInfoFetcher {
 	 * Logger for this class
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(UserInfoFetcher.class);
+	
+	
+	private Class<? extends CustomUser> clazz;
+	
+	@Autowired
+	private OpenIdConnectJson openIdConnectJson;
+
+	public void setClazz(Class<CustomUser> clazz) {
+		this.clazz = clazz;
+	}
+	public void setOpenIdConnectJson(OpenIdConnectJson openIdConnectJson) {
+		this.openIdConnectJson = openIdConnectJson;
+	}
+
 
 	public UserInfo loadUserInfo(final OIDCAuthenticationToken token) {
 
@@ -106,10 +121,8 @@ public class UserInfoFetcher {
 
 
 			if (!Strings.isNullOrEmpty(userInfoString)) {
-
-				JsonObject userInfoJson = new JsonParser().parse(userInfoString).getAsJsonObject();
-
-				UserInfo userInfo = DefaultUserInfo.fromJson(userInfoJson);
+				
+				CustomUser userInfo = openIdConnectJson.fromJson(userInfoString, clazz);
 
 				return userInfo;
 			} else {

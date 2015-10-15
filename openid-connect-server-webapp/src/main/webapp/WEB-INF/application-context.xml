@@ -188,8 +188,10 @@
 	
 	<!-- Insert json bean -->
 	<bean id="jsonld" class="br.com.srs.gsonld.GsonLD"></bean>
-	<bean class="br.ufsc.lrg.OpenIdConnectJson">
-		  <property name="gsonLD" ref="jsonld"/></bean>
+	<bean class="br.ufsc.lrg.openid.connect.OpenIdConnectJson">
+		  <property name="gsonLD" ref="jsonld"/>
+	</bean>
+	<!-- end of insert -->
 
 	<security:authentication-manager id="clientAuthenticationManager">
 		<security:authentication-provider user-service-ref="clientUserDetailsService" />

@@ -35,7 +35,7 @@ import com.google.common.collect.Lists;
  */
 public class OIDCAuthenticationProvider implements AuthenticationProvider {
 
-	private UserInfoFetcher userInfoFetcher = new UserInfoFetcher();
+	private UserInfoFetcher userInfoFetcher;
 
 	private GrantedAuthoritiesMapper authoritiesMapper = new NamedAdminAuthoritiesMapper();
 
@@ -77,6 +77,9 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 		}
 
 		return null;
+	}
+	public void setUserInfoFetcher(UserInfoFetcher userInfoFetcher) {
+		this.userInfoFetcher = userInfoFetcher;
 	}
 
 	/**
