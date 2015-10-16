@@ -1,31 +1,20 @@
-# MITREid Connect
+# MITREid Connect with Semantic
 ---
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.mitre/openid-connect-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.mitre/openid-connect-parent) [![Travis CI](https://travis-ci.org/mitreid-connect/OpenID-Connect-Java-Spring-Server.svg?branch=master)](https://travis-ci.org/mitreid-connect/OpenID-Connect-Java-Spring-Server)
-
-This project contains an OpenID Connect reference implementation in Java on the Spring platform, including a functioning [server library](openid-connect-server), [deployable server package](openid-connect-server-webapp), [client (RP) library](openid-connect-client), and general [utility libraries](openid-connect-common). The server can be used as an OpenID Connect Identity Provider as well as a general-purpose OAuth 2.0 Authorization Server.
-
-More information about the project can be found:
-
-* [The project homepage on GitHub (with related projects)](https://github.com/mitreid-connect/)
-* [Full documentation](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/wiki)
-* [Documentation for the Maven project and Java API](http://mitreid-connect.github.com/)
-* [Issue tracker (for bug reports and support requests)](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues)
-* The mailing list for the project can be found at `mitreid-connect@mit.edu`, with [archives available online](https://mailman.mit.edu/mailman/listinfo/mitreid-connect).
-
-
-The authors and key contributors of the project include: 
-
-* [Justin Richer](https://github.com/jricher/)
-* [Amanda Anganes](https://github.com/aanganes/)
-* [Michael Jett](https://github.com/jumbojett/)
-* [Michael Walsh](https://github.com/nemonik/)
-* [Steve Moore](https://github.com/srmoore)
-* [Mike Derryberry](https://github.com/mtderryberry)
-* [William Kim](https://github.com/wikkim)
-
-
-
-
-Copyright &copy;2015, [The MITRE Corporation](http://www.mitre.org/)
-  and the [MIT Kerberos and Internet Trust Consortium](http://kit.mit.edu/). Licensed under the Apache 2.0 license, for details see `LICENSE.txt`. 
+We enabled the use of semantics in the attributes disseminated by the Identity provider of OpenId Connect federations.
+ 
+In order to achieve that, we created the class  “br.ufsc.lrg.openid.connect.OpenIdConnectJson”. This class has two properties: * Gson  - if you choose the Gson property, your application will run without adding semantic values to the JSON that represents users’ attributes,
+* GsonLD -  if you choose GsonLD, your application will run with semantic. That will add semantic that are embedded in the implementation of UserInfo that you should create.
+ 
+An example of how your class can be created to using semantics can be found in br.ufsc.lrg.openid.connect.user.CustomUser .
+ 
+To set the property in the br.ufsc.lrg.openid.connect.OpenIdConnectJson, you will need configure the application-context.xml as the example below: 
+ 
+<bean id="jsonld" class="br.com.srs.gsonld.GsonLD"></bean>
+<bean class="br.ufsc.lrg.openid.connect.OpenIdConnectJson">
+<property name="gsonLD" ref="jsonld"/>
+</bean>
+ 
+The ontologies supported by the IdP can be found in http://idpaddress/idppath/.well-known/openid-configuration/ ,you just need to search by "semantic_databases".
+ 
+To add the ontologies supported by IdP in the /.well-known/openid-configuration endpoint response, we created the method getSemanticValues() at class org.mitre.openid.connect.model.DefaultUserInfo. This method basically search classes that implement UserInfo and look for their semantic annotation.

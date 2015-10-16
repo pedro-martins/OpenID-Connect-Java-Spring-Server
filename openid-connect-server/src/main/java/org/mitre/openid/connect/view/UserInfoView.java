@@ -28,7 +28,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import br.ufsc.lrg.openid.connect.OpenIdConnectJson;
+import br.ufsc.lrg.openid.connect.OpenIdConnectJsonSerializer;
 
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.ScopeClaimTranslationService;
@@ -61,7 +61,7 @@ public class UserInfoView extends AbstractView {
 	private static JsonParser jsonParser = new JsonParser();
 	
 	@Autowired
-	private OpenIdConnectJson openIdConnectJson;
+	private OpenIdConnectJsonSerializer openIdConnectJson;
 	/**
 	 * Logger for this class
 	 */

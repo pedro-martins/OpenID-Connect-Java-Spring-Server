@@ -50,7 +50,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import br.ufsc.lrg.openid.connect.OpenIdConnectJson;
+import br.ufsc.lrg.openid.connect.OpenIdConnectJsonSerializer;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -73,7 +73,7 @@ import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_S
 public class OAuthConfirmationController {
 
 
-	private OpenIdConnectJson openIdConnectJson;
+	private OpenIdConnectJsonSerializer openIdConnectJson;
 	@Autowired
 	private ClientDetailsEntityService clientService;
 
