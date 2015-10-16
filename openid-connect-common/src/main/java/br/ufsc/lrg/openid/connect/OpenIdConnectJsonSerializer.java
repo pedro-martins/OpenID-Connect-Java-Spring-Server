@@ -7,7 +7,7 @@ import br.com.srs.gsonld.GsonLD;
 import com.google.gson.Gson;
 
 
-public class OpenIdConnectJson implements InitializingBean{
+public class OpenIdConnectJsonSerializer implements InitializingBean{
 
 	private Gson gson;
 	private GsonLD gsonLD;

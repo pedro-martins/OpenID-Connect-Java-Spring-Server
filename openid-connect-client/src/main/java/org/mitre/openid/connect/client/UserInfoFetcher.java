@@ -36,7 +36,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import br.ufsc.lrg.openid.connect.OpenIdConnectJson;
+import br.ufsc.lrg.openid.connect.OpenIdConnectJsonSerializer;
 import br.ufsc.lrg.openid.connect.user.CustomUser;
 
 import com.google.common.base.Strings;
@@ -57,12 +57,12 @@ public class UserInfoFetcher {
 	private Class<? extends CustomUser> clazz;
 	
 	@Autowired
-	private OpenIdConnectJson openIdConnectJson;
+	private OpenIdConnectJsonSerializer openIdConnectJson;
 
 	public void setClazz(Class<CustomUser> clazz) {
 		this.clazz = clazz;
 	}
-	public void setOpenIdConnectJson(OpenIdConnectJson openIdConnectJson) {
+	public void setOpenIdConnectJson(OpenIdConnectJsonSerializer openIdConnectJson) {
 		this.openIdConnectJson = openIdConnectJson;
 	}
 
