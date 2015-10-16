@@ -4,7 +4,7 @@
 We enabled the use of semantics in the attributes disseminated by the Identity provider of OpenId Connect federations.
  
 In order to achieve that, we created the class  “br.ufsc.lrg.openid.connect.OpenIdConnectJson”. This class has two properties: 
-* Gson  - if you choose the Gson property, your application will run without adding semantic values to the JSON that represents users’ attributes,
+* Gson  - if you choose the Gson property, your application will run without adding semantic values to the JSON that represents users’ attributes;
 * GsonLD -  if you choose GsonLD, your application will run with semantic. That will add semantic that are embedded in the implementation of UserInfo that you should create.
  
 An example of how your class can be created to using semantics can be found in br.ufsc.lrg.openid.connect.user.CustomUser .
