@@ -33,8 +33,8 @@ This application uses two configurations that can be found in the web.xml:
  
 Here is an example of the dataset file format:
  
-```name;email;city;birthday;phone;bankacc;id\n```
-```Hayden;metus.In.nec@interdum.ca;Grimbergen;Jul 16, 2015;068-952-4015;PT24473852634320477629224;5160158472112375\n```
+```name;email;city;birthday;phone;bankacc;id\n
+Hayden;metus.In.nec@interdum.ca;Grimbergen;Jul 16, 2015;068-952-4015;PT24473852634320477629224;5160158472112375\n```
  
 The application IdPemulator needs a container to be initialized such as Tomcat. After deployed the application in the tomcat, you just need to start it. Do not forget to configure the application properly in the web.xml.
  
